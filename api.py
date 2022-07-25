@@ -23,24 +23,6 @@ def students():
         conn.close()
 
 
-# # GET ONE
-# @app.route("/select/<id>", methods=["GET"])
-# def userone(id):
-#     try:
-#         conn = connect()
-#         cur = conn.cursor(pymysql.cursors.DictCursor)
-#         cur.execute("SELECT * FROM FlaskMysql WHERE NAMEID =" + id)
-#         rows = cur.fetchall()
-#         resp = jsonify(rows)
-#         resp.status_code = 200
-#         return resp
-#     except Exception as e:
-#         print(e)
-#     finally:
-#         cur.close()
-#         conn.close()
-
-
 # INSERT
 @app.route("/students/create-student", methods=["POST"])
 def inst():
@@ -61,6 +43,24 @@ def inst():
     }
 
     return jsonify({"result": output})
+
+
+# GET ONE
+@app.route("/students/update-student/<name>", methods=["GET"])
+def userone(name):
+    try:
+        conn = connect()
+        cur = conn.cursor(pymysql.cursors.DictCursor)
+        cur.execute(f"SELECT * FROM student WHERE Name = '{name}'")
+        rows = cur.fetchall()
+        resp = jsonify(rows)
+        resp.status_code = 200
+        return resp
+    except Exception as e:
+        print(e)
+    finally:
+        cur.close()
+        conn.close()
 
 
 # Update
