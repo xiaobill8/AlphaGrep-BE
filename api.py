@@ -41,58 +41,46 @@ def students():
 #         conn.close()
 
 
-# # INSERT
-# @app.route("/insert", methods=["POST"])
-# def inst():
-#     conn = connect()
-#     cur = conn.cursor(pymysql.cursors.DictCursor)
-#     firstname = request.json["firstname"]
-#     lastname = request.json["lastname"]
-#     query = (
-#         "insert into FlaskMysql (firstname, lastname) values ('"
-#         + firstname
-#         + "', '"
-#         + lastname
-#         + "')"
-#     )
-#     cur.execute(query)
-#     conn.commit()
-#     cur.close()
-#     output = {
-#         "firstname": request.json["firstname"],
-#         "lastname": request.json["lastname"],
-#         "Message": "Success",
-#     }
+# INSERT
+@app.route("/students/create-student", methods=["POST"])
+def inst():
+    conn = connect()
+    cur = conn.cursor(pymysql.cursors.DictCursor)
+    name = request.json["name"]
+    password = request.json["password"]
+    classId = request.json["class"]
+    query = f"insert into student (Name, Password, Class) values ('{name}', '{password}', '{classId}')"
+    cur.execute(query)
+    conn.commit()
+    cur.close()
+    output = {
+        "name": name,
+        "password": password,
+        "class": classId,
+        "Message": "Success",
+    }
 
-#     return jsonify({"result": output})
+    return jsonify({"result": output})
 
 
-# # Update
-# @app.route("/update/<id>", methods=["PUT"])
-# def updates(id):
-#     conn = connect()
-#     cur = conn.cursor(pymysql.cursors.DictCursor)
-#     firstname = request.json["firstname"]
-#     lastname = request.json["lastname"]
-#     query = (
-#         "update FlaskMysql set firstname = '"
-#         + firstname
-#         + "', lastname = '"
-#         + lastname
-#         + "' Where NameId = '"
-#         + id
-#         + "'"
-#     )
-#     cur.execute(query)
-#     conn.commit()
-#     cur.close()
-#     output = {
-#         "firstname": request.json["firstname"],
-#         "lastname": request.json["lastname"],
-#         "Message": "Success",
-#     }
+# Update
+@app.route("/students/update-student/<name>", methods=["PUT"])
+def updates(name):
+    conn = connect()
+    cur = conn.cursor(pymysql.cursors.DictCursor)
+    password = request.json["password"]
+    classId = request.json["class"]
+    query = f"UPDATE student SET Password = {password}, Class = {classId} WHERE Name = {name})"
+    cur.execute(query)
+    conn.commit()
+    cur.close()
+    output = {
+        "name": name,
+        "password": password,
+        "Message": "Success",
+    }
 
-#     return jsonify({"result": output})
+    return jsonify({"result": output})
 
 
 # # DELETE
