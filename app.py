@@ -1,30 +1,113 @@
-from flask import Flask
+from flask import Flask, jsonify, request, flash
 from flask_cors import CORS
+import pymysql
+from connection import connect
 
 app = Flask(__name__)
 CORS(app)
+app.config["CORS_HEADERS"] = "Content-Type"
 
-# @app.route("/")
-# @app.route("/index")
-# def index():
-#     return "Hello, World!"
+# GET ALL
+@app.route("/students", methods=["GET"])
+def students():
+    try:
+        conn = connect()
+        cur = conn.cursor(pymysql.cursors.DictCursor)
+        cur.execute("SELECT * FROM student")
+        rows = cur.fetchall()
+        resp = jsonify(rows)
+        resp.headers.add("Access-Control-Allow-Origin", "*")
+        resp.status_code = 200
+        return resp
+    except Exception as e:
+        print(e)
+    finally:
+        cur.close()
+        conn.close()
 
 
-# if __name__ == "__main__":
-#     app.debug = True
-#     app.run()
+# INSERT
+@app.route("/students/create-student", methods=["POST"])
+def inst():
+    conn = connect()
+    cur = conn.cursor(pymysql.cursors.DictCursor)
+    name = request.json["name"]
+    password = request.json["password"]
+    classId = request.json["class"]
+    query = f"insert into student (Name, Password, Class) values ('{name}', '{password}', '{classId}')"
+    cur.execute(query)
+    conn.commit()
+    cur.close()
+    output = {
+        "name": name,
+        "password": password,
+        "class": classId,
+        "Message": "Success",
+    }
+
+    return jsonify({"result": output})
 
 
-# @app.route("/")
-# def main():
-#     students = []
-#     conn = connection()
-#     cursor = conn.cursor()
-#     cursor.execute("SELECT * FROM students")
-#     for row in cursor.fetchall():
-#         students.append({"name": row[0], "password": row[1], "class": row[2]})
-#     conn.close()
-#     return render_template("studentlist.html", students=students)
+# GET ONE
+@app.route("/students/update-student/<name>", methods=["GET"])
+def userone(name):
+    try:
+        conn = connect()
+        cur = conn.cursor(pymysql.cursors.DictCursor)
+        cur.execute(f"SELECT * FROM student WHERE Name = '{name}'")
+        rows = cur.fetchall()
+        resp = jsonify(rows)
+        resp.status_code = 200
+        return resp
+    except Exception as e:
+        print(e)
+    finally:
+        cur.close()
+        conn.close()
+
+
+# Update
+@app.route("/students/update-student/<name>", methods=["PUT"])
+def updates(name):
+    conn = connect()
+    cur = conn.cursor(pymysql.cursors.DictCursor)
+    password = request.json["password"]
+    classId = request.json["class"]
+    query = f"UPDATE student SET Password = '{password}', Class = '{classId}' WHERE Name = '{name}'"
+    cur.execute(query)
+    conn.commit()
+    cur.close()
+    output = {
+        "name": name,
+        "password": password,
+        "Message": "Success",
+    }
+
+    return jsonify({"result": output})
+
+
+# # DELETE
+# @app.route("/delete/<id>", methods=["DELETE"])
+# def delete(id):
+#     conn = connect()
+#     cur = conn.cursor(pymysql.cursors.DictCursor)
+#     firstname = request.json["firstname"]
+#     lastname = request.json["lastname"]
+#     query = "DELETE FROM FLASKMYSQL Where NameId = '" + id + "'"
+#     cur.execute(query)
+#     conn.commit()
+#     cur.close()
+#     output = {
+#         "firstname": request.json["firstname"],
+#         "lastname": request.json["lastname"],
+#         "Message": "DELETED",
+#     }
+#     return jsonify({"result": output})
+
+
+if __name__ == "__main__":
+    app.debug = True
+    app.run()
 
 
 # if __name__ == "__main__":
