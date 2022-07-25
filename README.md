@@ -1,6 +1,10 @@
+## Create a virtual env
+
+`virtualenv .venv`
+
 ## Activate Python venv
 
-`source bin/activate`
+`source .venv/bin/activate`
 
 ## Install Dependencies
 
