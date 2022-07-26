@@ -1,15 +1,15 @@
 import logging
-from flask import Flask, jsonify, request, flash
+
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import pymysql
 from connection import connect
 
 app = Flask(__name__)
-cors = CORS(app)
+cors = CORS(app, resources={r"/students/*": {"origins": "*"}})
+cors = CORS(app, resources={r"/top-students": {"origins": "*"}})
 
 logging.getLogger("flask_cors").level = logging.DEBUG
-
-app.config["CORS_HEADERS"] = "Content-Type"
 
 # GET ALL STUDENTS
 @app.route("/students", methods=["GET"])
@@ -113,29 +113,35 @@ def updates(name):
     output = {
         "name": name,
         "password": password,
+        "class": classId,
         "Message": "Success",
     }
     resp = jsonify({"result": output})
+    resp.status_code = 200
     return resp
 
 
-# # DELETE
-# @app.route("/delete/<id>", methods=["DELETE"])
-# def delete(id):
-#     conn = connect()
-#     cur = conn.cursor(pymysql.cursors.DictCursor)
-#     firstname = request.json["firstname"]
-#     lastname = request.json["lastname"]
-#     query = "DELETE FROM FLASKMYSQL Where NameId = '" + id + "'"
-#     cur.execute(query)
-#     conn.commit()
-#     cur.close()
-#     output = {
-#         "firstname": request.json["firstname"],
-#         "lastname": request.json["lastname"],
-#         "Message": "DELETED",
-#     }
-#     return jsonify({"result": output})
+# DELETE
+@app.route("/students/delete-student/<name>", methods=["DELETE"])
+def delete(name):
+    try:
+        conn = connect()
+        cur = conn.cursor(pymysql.cursors.DictCursor)
+        query = f"DELETE FROM student WHERE Name = '{name}'"
+        cur.execute(query)
+        conn.commit()
+        output = {
+            "name": name,
+            "Message": "DELETED",
+        }
+        resp = jsonify({"result": output})
+        resp.status_code = 200
+        return resp
+    except Exception as e:
+        print(e)
+    finally:
+        cur.close()
+        conn.close()
 
 
 if __name__ == "__main__":
