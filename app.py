@@ -4,6 +4,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import pymysql
 from connection import connect
+import csv
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/students/*": {"origins": "*"}})
@@ -79,6 +80,34 @@ def inst():
     resp = jsonify({"result": output})
 
     return resp
+
+
+# Upload CSV
+@app.route("/students/upload-csv", methods=["POST"])
+def upload():
+    try:
+        conn = connect()
+        cur = conn.cursor(pymysql.cursors.DictCursor)
+        form_dict = request.form.to_dict()
+        str_file_value = form_dict.get("csvInput")
+        file_t = str_file_value.splitlines()
+        csv_reader = csv.reader(file_t, delimiter=",")
+        next(csv_reader, None)  # skip the headers
+        for row in csv_reader:
+            query = f"insert into student (Name, Password, Class) values ('{row[0]}', '{row[1]}', '{row[2]}')"
+            cur.execute(query)
+            conn.commit()
+        output = {
+            "Message": "Success",
+        }
+        resp = jsonify({"result": output})
+        resp.status_code = 200
+        return resp
+    except Exception as e:
+        print(e)
+    finally:
+        cur.close()
+        conn.close()
 
 
 # GET ONE
