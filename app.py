@@ -32,7 +32,7 @@ def students():
 
 
 @app.route("/scores", methods=["GET"])
-def students():
+def scores():
     try:
         conn = connect()
         cur = conn.cursor(pymysql.cursors.DictCursor)
@@ -97,6 +97,7 @@ def inst():
             "Message": "Success",
         }
         resp = jsonify({"result": output})
+        resp.status_code = 200
         return resp
     except Exception as e:
         print(e)
@@ -107,7 +108,7 @@ def inst():
 
 # Add Score
 @app.route("/scores/add-score", methods=["POST"])
-def inst():
+def add_score():
     try:
         conn = connect()
         cur = conn.cursor(pymysql.cursors.DictCursor)
@@ -125,7 +126,7 @@ def inst():
             "Message": "Success",
         }
         resp = jsonify({"result": output})
-
+        resp.status_code = 200
         return resp
     except Exception as e:
         print(e)
@@ -136,7 +137,7 @@ def inst():
 
 # Upload students CSV
 @app.route("/students/upload-csv", methods=["POST"])
-def upload():
+def upload_student():
     try:
         conn = connect()
         cur = conn.cursor(pymysql.cursors.DictCursor)
@@ -165,7 +166,7 @@ def upload():
 
 # Upload scores CSV
 @app.route("/scores/upload-csv", methods=["POST"])
-def upload():
+def upload_score():
     try:
         conn = connect()
         cur = conn.cursor(pymysql.cursors.DictCursor)
@@ -194,7 +195,7 @@ def upload():
 
 # Get one student
 @app.route("/students/update-student/<name>", methods=["GET"])
-def userone(name):
+def get_student(name):
     try:
         conn = connect()
         cur = conn.cursor(pymysql.cursors.DictCursor)
@@ -212,7 +213,7 @@ def userone(name):
 
 # Get one score
 @app.route("/scores/update-score/<name>/<subject>", methods=["GET"])
-def userone(name, subject):
+def get_score(name, subject):
     try:
         conn = connect()
         cur = conn.cursor(pymysql.cursors.DictCursor)
@@ -232,7 +233,7 @@ def userone(name, subject):
 
 # UPDATE
 @app.route("/students/update-student/<name>", methods=["PUT"])
-def updates(name):
+def update_student(name):
     try:
         conn = connect()
         cur = conn.cursor(pymysql.cursors.DictCursor)
@@ -260,12 +261,12 @@ def updates(name):
 
 # UPDATE
 @app.route("/scores/update-score/<name>/<subject>", methods=["PUT"])
-def updates(name, subject):
+def update_score(name, subject):
     try:
         conn = connect()
         cur = conn.cursor(pymysql.cursors.DictCursor)
         score = request.json["score"]
-        query = f"UPDATE student SET Score = '{score}' WHERE Name = '{name}' AND Subject = '{subject}'"
+        query = f"UPDATE score SET Score = '{score}' WHERE Name = '{name}' AND Subject = '{subject}'"
         cur.execute(query)
         conn.commit()
         cur.close()
@@ -287,7 +288,7 @@ def updates(name, subject):
 
 # DELETE
 @app.route("/students/delete-student/<name>", methods=["DELETE"])
-def delete(name):
+def delete_student(name):
     try:
         conn = connect()
         cur = conn.cursor(pymysql.cursors.DictCursor)
@@ -310,11 +311,11 @@ def delete(name):
 
 # DELETE
 @app.route("/scores/delete-score/<name>/<subject>", methods=["DELETE"])
-def delete(name, subject):
+def delete_score(name, subject):
     try:
         conn = connect()
         cur = conn.cursor(pymysql.cursors.DictCursor)
-        query = f"DELETE FROM student WHERE Name = '{name}' AND Subject = '{subject}"
+        query = f"DELETE FROM score WHERE Name = '{name}' AND Subject = '{subject}'"
         cur.execute(query)
         conn.commit()
         output = {
