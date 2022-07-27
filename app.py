@@ -13,7 +13,7 @@ cors = CORS(app, resources={r"/top-students": {"origins": "*"}})
 
 logging.getLogger("flask_cors").level = logging.DEBUG
 
-# GET ALL STUDENTS
+# Get all students
 @app.route("/students", methods=["GET"])
 def students():
     try:
@@ -33,6 +33,7 @@ def students():
         conn.close()
 
 
+# Get all scores
 @app.route("/scores", methods=["GET"])
 def scores():
     try:
@@ -52,38 +53,7 @@ def scores():
         conn.close()
 
 
-# GET ALL STUDENTS
-@app.route("/top-students", methods=["GET"])
-def top_students():
-    try:
-        conn = connect()
-        cur = conn.cursor(pymysql.cursors.DictCursor)
-        sql_query = """
-            SELECT Name, Password, Class, Subject, Score from (
-                SELECT Student.Name, Student.Password, Student.Class, Score.Subject, Score.Score,
-                    @Subject_rank := IF(@current_Subject = Score.Subject, @Subject_rank + 1, 1)
-                    AS Subject_rank,
-                    @Subject_rank := Score.Subject
-                FROM Student 
-                INNER JOIN Score ON Student.Name=Score.Name
-                ORDER BY Score.Subject, Score.Score desc ) ranked_rows
-            WHERE Subject_rank <= 2
-        """
-        cur.execute(sql_query)
-        rows = cur.fetchall()
-        resp = jsonify(rows)
-        resp.status_code = 200
-        return resp
-    except Exception as e:
-        resp = jsonify({"error": e.args[0], "message": e.args[1]})
-        resp.status_code = 400
-        return resp
-    finally:
-        cur.close()
-        conn.close()
-
-
-# Insert Student
+# Insert student
 @app.route("/students/create-student", methods=["POST"])
 def inst():
     try:
@@ -114,7 +84,7 @@ def inst():
         conn.close()
 
 
-# Add Score
+# Add score
 @app.route("/scores/add-score", methods=["POST"])
 def add_score():
     try:
@@ -249,7 +219,7 @@ def get_score(name, subject):
         conn.close()
 
 
-# UPDATE
+# Update student
 @app.route("/students/update-student/<name>", methods=["PUT"])
 def update_student(name):
     try:
@@ -279,7 +249,7 @@ def update_student(name):
         conn.close()
 
 
-# UPDATE
+# Update score
 @app.route("/scores/update-score/<name>/<subject>", methods=["PUT"])
 def update_score(name, subject):
     try:
@@ -308,7 +278,7 @@ def update_score(name, subject):
         conn.close()
 
 
-# DELETE
+# Delete student
 @app.route("/students/delete-student/<name>", methods=["DELETE"])
 def delete_student(name):
     try:
@@ -333,7 +303,7 @@ def delete_student(name):
         conn.close()
 
 
-# DELETE
+# Delete score
 @app.route("/scores/delete-score/<name>/<subject>", methods=["DELETE"])
 def delete_score(name, subject):
     try:
@@ -361,6 +331,36 @@ def delete_score(name, subject):
 if __name__ == "__main__":
     app.debug = True
     app.run()
+
+# Get top 2 scores per subject
+@app.route("/top-students", methods=["GET"])
+def top_students():
+    try:
+        conn = connect()
+        cur = conn.cursor(pymysql.cursors.DictCursor)
+        sql_query = """
+            SELECT Name, Password, Class, Subject, Score from (
+                SELECT Student.Name, Student.Password, Student.Class, Score.Subject, Score.Score,
+                    @Subject_rank := IF(@current_Subject = Score.Subject, @Subject_rank + 1, 1)
+                    AS Subject_rank,
+                    @Subject_rank := Score.Subject
+                FROM Student 
+                INNER JOIN Score ON Student.Name=Score.Name
+                ORDER BY Score.Subject, Score.Score desc ) ranked_rows
+            WHERE Subject_rank <= 2
+        """
+        cur.execute(sql_query)
+        rows = cur.fetchall()
+        resp = jsonify(rows)
+        resp.status_code = 200
+        return resp
+    except Exception as e:
+        resp = jsonify({"error": e.args[0], "message": e.args[1]})
+        resp.status_code = 400
+        return resp
+    finally:
+        cur.close()
+        conn.close()
 
 
 # if __name__ == "__main__":
