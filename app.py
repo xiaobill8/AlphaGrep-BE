@@ -25,7 +25,9 @@ def students():
         resp.status_code = 200
         return resp
     except Exception as e:
-        print(e)
+        resp = jsonify({"error": e.args[0], "message": e.args[1]})
+        resp.status_code = 400
+        return resp
     finally:
         cur.close()
         conn.close()
@@ -42,7 +44,9 @@ def scores():
         resp.status_code = 200
         return resp
     except Exception as e:
-        print(e)
+        resp = jsonify({"error": e.args[0], "message": e.args[1]})
+        resp.status_code = 400
+        return resp
     finally:
         cur.close()
         conn.close()
@@ -71,7 +75,9 @@ def top_students():
         resp.status_code = 200
         return resp
     except Exception as e:
-        print(e)
+        resp = jsonify({"error": e.args[0], "message": e.args[1]})
+        resp.status_code = 400
+        return resp
     finally:
         cur.close()
         conn.close()
@@ -100,7 +106,9 @@ def inst():
         resp.status_code = 200
         return resp
     except Exception as e:
-        print(e)
+        resp = jsonify({"error": e.args[0], "message": e.args[1]})
+        resp.status_code = 400
+        return resp
     finally:
         cur.close()
         conn.close()
@@ -129,7 +137,9 @@ def add_score():
         resp.status_code = 200
         return resp
     except Exception as e:
-        print(e)
+        resp = jsonify({"error": e.args[0], "message": e.args[1]})
+        resp.status_code = 400
+        return resp
     finally:
         cur.close()
         conn.close()
@@ -157,8 +167,10 @@ def upload_student():
         resp.status_code = 200
         return resp
     except Exception as e:
-        # TODO: Return error resp to FE
-        print(e)
+        # TODO: Return "error" resp to FE
+        resp = jsonify({"error": e.args[0], "message": e.args[1]})
+        resp.status_code = 400
+        return resp
     finally:
         cur.close()
         conn.close()
@@ -186,8 +198,10 @@ def upload_score():
         resp.status_code = 200
         return resp
     except Exception as e:
-        # TODO: Return error resp to FE
-        print(e)
+        # TODO: Return "error" resp to FE
+        resp = jsonify({"error": e.args[0], "message": e.args[1]})
+        resp.status_code = 400
+        return resp
     finally:
         cur.close()
         conn.close()
@@ -205,7 +219,9 @@ def get_student(name):
         resp.status_code = 200
         return resp
     except Exception as e:
-        print(e)
+        resp = jsonify({"error": e.args[0], "message": e.args[1]})
+        resp.status_code = 400
+        return resp
     finally:
         cur.close()
         conn.close()
@@ -225,7 +241,9 @@ def get_score(name, subject):
         resp.status_code = 200
         return resp
     except Exception as e:
-        print(e)
+        resp = jsonify({"error": e.args[0], "message": e.args[1]})
+        resp.status_code = 400
+        return resp
     finally:
         cur.close()
         conn.close()
@@ -253,7 +271,9 @@ def update_student(name):
         resp.status_code = 200
         return resp
     except Exception as e:
-        print(e)
+        resp = jsonify({"error": e.args[0], "message": e.args[1]})
+        resp.status_code = 400
+        return resp
     finally:
         cur.close()
         conn.close()
@@ -280,7 +300,9 @@ def update_score(name, subject):
         resp.status_code = 200
         return resp
     except Exception as e:
-        print(e)
+        resp = jsonify({"error": e.args[0], "message": e.args[1]})
+        resp.status_code = 400
+        return resp
     finally:
         cur.close()
         conn.close()
@@ -303,7 +325,9 @@ def delete_student(name):
         resp.status_code = 200
         return resp
     except Exception as e:
-        print(e)
+        resp = jsonify({"error": e.args[0], "message": e.args[1]})
+        resp.status_code = 400
+        return resp
     finally:
         cur.close()
         conn.close()
@@ -326,7 +350,9 @@ def delete_score(name, subject):
         resp.status_code = 200
         return resp
     except Exception as e:
-        print(e)
+        resp = jsonify({"error": e.args[0], "message": e.args[1]})
+        resp.status_code = 400
+        return resp
     finally:
         cur.close()
         conn.close()
