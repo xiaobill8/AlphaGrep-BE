@@ -328,10 +328,6 @@ def delete_score(name, subject):
         conn.close()
 
 
-if __name__ == "__main__":
-    app.debug = True
-    app.run()
-
 # Get top 2 scores per subject
 @app.route("/top-students", methods=["GET"])
 def top_students():
@@ -361,6 +357,11 @@ def top_students():
     finally:
         cur.close()
         conn.close()
+
+
+if __name__ == "__main__":
+    app.debug = True
+    app.run()
 
 
 # if __name__ == "__main__":
