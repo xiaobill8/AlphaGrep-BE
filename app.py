@@ -137,13 +137,49 @@ def upload_student():
         resp.status_code = 200
         return resp
     except Exception as e:
-        # TODO: Return "error" resp to FE
         resp = jsonify({"error": e.args[0], "message": e.args[1]})
         resp.status_code = 400
         return resp
     finally:
         cur.close()
         conn.close()
+
+
+# # Upload students CSV
+# @app.route("/students/upload-csv", methods=["POST"])
+# def upload_student():
+#     try:
+#         errors = []
+#         conn = connect()
+#         cur = conn.cursor(pymysql.cursors.DictCursor)
+#         form_dict = request.form.to_dict()
+#         str_file_value = form_dict.get("csvInput")
+#         file_t = str_file_value.splitlines()
+#         csv_reader = csv.reader(file_t, delimiter=",")
+#         next(csv_reader, None)  # skip the headers
+#         for row in csv_reader:
+#             try:
+#                 query = f"insert into student (Name, Password, Class) values ('{row[0]}', '{row[1]}', '{row[2]}')"
+#                 cur.execute(query)
+#                 conn.commit()
+#             except Exception as e:
+#                 errors.append(e.args[1])
+#                 pass
+#         if errors:
+#             output = {"Message": "Errors in CSV Upload", "Errors": errors}
+#         else:
+#             output = {
+#                 "Message": "Success",
+#             }
+#         resp = jsonify({"result": output})
+#         resp.status_code = 200
+#         return resp
+#     except Exception as e:
+#         resp.status_code = 400
+#         return resp
+#     finally:
+#         cur.close()
+#         conn.close()
 
 
 # Upload scores CSV
@@ -168,7 +204,6 @@ def upload_score():
         resp.status_code = 200
         return resp
     except Exception as e:
-        # TODO: Return "error" resp to FE
         resp = jsonify({"error": e.args[0], "message": e.args[1]})
         resp.status_code = 400
         return resp
