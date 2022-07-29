@@ -335,14 +335,17 @@ def top_students():
         conn = connect()
         cur = conn.cursor(pymysql.cursors.DictCursor)
         sql_query = """
-            SELECT Name, Password, Class, Subject, Score from (
-                SELECT Student.Name, Student.Password, Student.Class, Score.Subject, Score.Score,
-                    @Subject_rank := IF(@current_Subject = Score.Subject, @Subject_rank + 1, 1)
-                    AS Subject_rank,
-                    @Subject_rank := Score.Subject
-                FROM Student 
-                INNER JOIN Score ON Student.Name=Score.Name
-                ORDER BY Score.Subject, Score.Score desc ) ranked_rows
+            SELECT Student.Name, Student.Password, Student.Class, Score.Subject, Score.Score
+            FROM Student
+            INNER JOIN
+            (
+                SELECT Name, Subject, Score,
+                    @Subject_rank := IF(@Current_Subject = Subject, @Subject_rank + 1, 1) AS Subject_rank,
+                    @Current_Subject := Subject
+                FROM Score
+                ORDER BY Subject, Score desc
+            ) Score
+            ON Student.Name = Score.Name
             WHERE Subject_rank <= 2
         """
         cur.execute(sql_query)
